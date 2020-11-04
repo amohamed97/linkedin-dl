@@ -12,7 +12,6 @@ pyinstaller==4.0
 pyinstaller-hooks-contrib==2020.10
 pylint==2.6.0
 requests==2.24.0
-selenium==3.141.0
 six==1.15.0
 soupsieve==2.0.1
 toml==0.10.2
