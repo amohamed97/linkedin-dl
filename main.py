@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)-8s %(message)s')
 ### User data
 USERNAME = ''
 PASSWORD = ''
-COURSE_SLUG = ''
+COURSE_SLUGS = []
 BASE_DOWNLOAD_PATH = os.getcwd()
 
 ##
@@ -99,7 +99,7 @@ def login():
         HEADERS['Csrf-Token'] = next(v.strip('"') for k,v in session.cookies.get_dict().items() if k.lower() == 'jsessionid')        
         logging.info("Logged in successfully")
 
-def fetch_course():
+def fetch_course(COURSE_SLUG):
     """
     Fetches the courses data from the linkedin-learning API directly
     """
@@ -178,12 +178,27 @@ def download_file(url, output):
                     os.remove(output)
 
 def main():
+    courses_with_error = []
     login()
-    fetch_course()
+    for slug in COURSE_SLUGS:
+        try:
+            fetch_course(slug)
+        except:
+            courses_with_error.append(slug)
+            continue
+    if(courses_with_error):
+        print("These courses have encountered an error while downloading.")
+        print("\n".join(courses_with_error))
 
 if __name__ == "__main__":
     USERNAME = input("Enter your username:")
     PASSWORD = getpass.getpass("Enter your password:")
-    print("Enter the course's slug (the course name as specified in the url linkedin.com/learning/<SLUG>)")
-    COURSE_SLUG = input("Course slug:")    
+    print("Enter the courses' slugs (the course name as specified in the url linkedin.com/learning/<SLUG>)")
+    print("Empty input will start downloading")
+    while(True):
+        temp_slug = input("Course slug:")
+        if(temp_slug):
+            COURSE_SLUGS.append(temp_slug)    
+        else:
+            break
     main()
